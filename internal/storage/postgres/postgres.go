@@ -9,6 +9,7 @@ import (
 	"github.com/pavel97go/gosuslugi/config"
 )
 
+// NewPool создаёт пул соединений к Postgres и проверяет подключение.
 func NewPool(cfg *config.DB) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Name, cfg.SSLMode)
@@ -20,6 +21,7 @@ func NewPool(cfg *config.DB) (*pgxpool.Pool, error) {
 	if cfg.MaxConns > 0 {
 		pcfg.MaxConns = cfg.MaxConns
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

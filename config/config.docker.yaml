@@ -1,0 +1,10 @@
+server:
+  port: 8080
+db:
+  host: postgres     # ВАЖНО: имя сервиса в docker-compose
+  port: 5432
+  user: postgres
+  password: postgres
+  name: gosuslugi
+  sslmode: disable
+  max_conns: 10

@@ -1,8 +1,8 @@
-version: "3.9"
 services:
   postgres:
     image: postgres:16
     container_name: gosuslugi_pg
+    restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -16,5 +16,16 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+
+  api:
+    build: .
+    container_name: gosuslugi_api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
 volumes:
   pg_data:

@@ -3,6 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
+	"time"
+
+	"github.com/rs/zerolog"
+	zlog "github.com/rs/zerolog/log"
 
 	"github.com/pavel97go/gosuslugi/config"
 	app "github.com/pavel97go/gosuslugi/internal/app"
@@ -10,27 +15,26 @@ import (
 )
 
 func main() {
-	// 1) Загружаем конфиг
+	// zerolog настройка
+	zerolog.TimeFieldFormat = time.RFC3339
+	zlog.Logger = zlog.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen})
+
 	cfg, err := config.Load("")
 	if err != nil {
-		log.Fatal(err)
+		zlog.Fatal().Err(err).Msg("load config")
 	}
 
-	// 2) Подключаемся к БД
 	pool, err := pgstore.NewPool(&cfg.DB)
 	if err != nil {
-		log.Fatal("db connect error: ", err)
+		zlog.Fatal().Err(err).Msg("db connect error")
 	}
 	defer pool.Close()
-	log.Println("DB connected OK")
 
-	// 3) Роутер
-	router := app.NewRouter(pool)
-
-	// 4) Старт сервера
+	r := app.NewRouter(pool)
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
-	log.Println("Listening on", addr)
-	if err := router.Listen(addr); err != nil {
+	zlog.Info().Msgf("listening on %s", addr)
+
+	if err := r.Listen(addr); err != nil {
 		log.Fatal(err)
 	}
 }
