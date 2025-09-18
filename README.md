@@ -1,23 +1,29 @@
 # 🇷🇺 Gosuslugi API
 
 ![CI](https://github.com/pavel97go/gosuslugi/actions/workflows/ci.yml/badge.svg)
+![Go Version](https://img.shields.io/badge/Go-1.25-blue)
+![Fiber](https://img.shields.io/badge/Fiber-🚀-green)
+![Postgres](https://img.shields.io/badge/Postgres-16-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Микросервис для подачи заявок (паспорта, справки и т.д.), написанный на **Go (Fiber + pgx/pgxpool)** с поддержкой миграций через **goose** и запуском в **Docker Compose**.  
-Проект реализует базовый CRUD и готов для продакшена.
+Микросервис для подачи заявок (**паспорта, справки и т.д.**) на **Go (Fiber + pgx/pgxpool)**.  
+Поддерживает миграции через **goose**, логирование через **zerolog**, и готов к запуску в **Docker Compose**.  
+Проект реализует полный CRUD и настроен для CI/CD через GitHub Actions.
 
 ---
 
 ## 🚀 Быстрый старт
 
-### 1. Запуск через Docker Compose
 ```bash
+git clone git@github.com:pavel97go/gosuslugi.git
+cd gosuslugi
 docker compose up -d --build
 ```
 
-### 2. Проверка статуса
+Проверка статуса:
 ```bash
-curl http://localhost:8080/health/live
-curl http://localhost:8080/health/ready
+curl http://localhost:8080/health/live   # {"status":"ok"}
+curl http://localhost:8080/health/ready  # {"status":"up"}
 ```
 
 ---
@@ -43,12 +49,10 @@ POST /v1/applications
 
 ---
 
-## 🗄️ БД
+## 🗄️ Архитектура
 
-Миграции выполняются с помощью [goose](https://github.com/pressly/goose):
-
-```bash
-goose -dir db/migrations postgres "postgres://postgres:postgres@localhost:5432/gosuslugi?sslmode=disable" up
+```
+[ Client ] -> [ Fiber API ] -> [ Usecase ] -> [ Repository ] -> [ PostgreSQL ]
 ```
 
 ---
@@ -65,17 +69,30 @@ goose -dir db/migrations postgres "postgres://postgres:postgres@localhost:5432/g
 
 ---
 
-##  Тесты
+## 🧪 Тесты
 Запуск юнит-тестов:
 ```bash
 go test -race ./...
 ```
 
-##  Сборка и запуск вручную
+---
+
+## ⚡ Сборка и запуск вручную
 ```bash
 go build ./cmd/api
 ./api
 ```
+
+---
+
+## 🗺️ Roadmap
+- [ ] Добавить **Swagger/OpenAPI**
+- [ ] Подключить **JWT авторизацию**
+- [ ] Реализовать **Rate limiting**
+- [ ] Добавить **Helm чарты** для Kubernetes
+- [ ] Настроить **DockerHub автопубликацию**
+
+---
 
 ## 📄 Лицензия
 Проект распространяется под лицензией [MIT](LICENSE).
