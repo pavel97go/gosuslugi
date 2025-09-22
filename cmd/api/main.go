@@ -2,12 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"github.com/rs/zerolog"
-	zlog "github.com/rs/zerolog/log"
+	"github.com/rs/zerolog/log"
 
 	"github.com/pavel97go/gosuslugi/config"
 	app "github.com/pavel97go/gosuslugi/internal/app"
@@ -15,26 +14,27 @@ import (
 )
 
 func main() {
-	// zerolog настройка
-	zerolog.TimeFieldFormat = time.RFC3339
-	zlog.Logger = zlog.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen})
+
+	log.Logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.Kitchen}).
+		With().
+		Timestamp().
+		Logger()
 
 	cfg, err := config.Load("")
 	if err != nil {
-		zlog.Fatal().Err(err).Msg("load config")
+		log.Fatal().Err(err).Msg("load config")
 	}
 
 	pool, err := pgstore.NewPool(&cfg.DB)
 	if err != nil {
-		zlog.Fatal().Err(err).Msg("db connect error")
+		log.Fatal().Err(err).Msg("db connect")
 	}
 	defer pool.Close()
 
 	r := app.NewRouter(pool)
 	addr := fmt.Sprintf(":%d", cfg.Server.Port)
-	zlog.Info().Msgf("listening on %s", addr)
-
+	log.Info().Str("addr", addr).Msg("listening")
 	if err := r.Listen(addr); err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("server stopped")
 	}
 }
