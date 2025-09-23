@@ -1,4 +1,5 @@
 # 🇷🇺 Gosuslugi API
+> From bureaucracy → to API 🚀
 
 ![CI](https://github.com/pavel97go/gosuslugi/actions/workflows/ci.yml/badge.svg)
 ![Go Version](https://img.shields.io/badge/Go-1.25-blue)
